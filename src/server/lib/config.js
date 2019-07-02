@@ -64,7 +64,7 @@ environments.production = {
 	},
 	hashingSecret:'prodSecret',
 	mongoDB:{
-		uri:''
+		uri:`mongodb+srv://mactunechy:${process.env.db_password}@firstcluster-ueynt.mongodb.net/provisional?retryWrites=true&w=majority`
 	},
 	company : {
 		infoEmail : ''
