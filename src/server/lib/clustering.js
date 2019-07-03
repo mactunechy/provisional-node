@@ -33,7 +33,7 @@
     cluster.on('exit', function(worker, code, signal) {
         console.log(`Worker  ${worker.process.pid} died with code:  ${code} , and signal:  ${signal}`);
         console.log('Starting a new worker');
-        cluster.fork();
+        setTimeout(cluster.fork(),2000)
         workers.push(cluster.fork());
         // to receive messages from worker process
         workers[workers.length-1].on('message', function(message) {

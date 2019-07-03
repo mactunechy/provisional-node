@@ -9,4 +9,6 @@ const init = require('./server/lib/clustering')
 
 
 //Starting
-init(app)
+//init(app)
+
+app()
