@@ -12,6 +12,9 @@
 
 
  lib.create = async (req,res) => {
+     const decision = req.accessToken.verify()
+     //make a decision whether to continue if the token is still valid
+     if(!decision.expired || !decision.isMaxExams) return res.status(200).send(decision)
      const details = {};
      details.student = req.token.id
      let questions = await Question.find({}).catch( () => console.log('failed to get Questions') );

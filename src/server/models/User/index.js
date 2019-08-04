@@ -7,6 +7,8 @@ const mongoose = require ('mongoose');
 const {hash} = require ('../../lib/helpers');
 const config = require ('../../lib/config');
 const jwt = require ('jsonwebtoken');
+const {uploadOnline} = require ('../../lib/fileUploader');
+
 //Users Schema
 const userSchema = new mongoose.Schema ({
   firstName: {
@@ -26,6 +28,9 @@ const userSchema = new mongoose.Schema ({
     required: true,
     unique: true,
   },
+  profileImage: {
+    type: String,
+  },
   phone: {
     type: String,
     minlength: 10,
@@ -41,23 +46,19 @@ const userSchema = new mongoose.Schema ({
   },
   isActive: {
     type: Boolean,
-    default : false
+    default: false,
   },
   clearance: {
     type: String,
     default: 'green',
   },
-  accessToken : {
-    type : mongoose.SchemaTypes.ObjectId,
-    ref:'Token'
-  }
+  accessToken: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Token',
+  },
 });
 
-
-
-
-
-userSchema.methods.authUser = async function ({ email, password }) {
+userSchema.methods.authUser = async function({email, password}) {
   let inputPassword = await hash (password);
   console.log (inputPassword);
   console.log (this.password);
@@ -66,11 +67,10 @@ userSchema.methods.authUser = async function ({ email, password }) {
   let token = await jwt.sign (
     {
       id: this._id,
-      group: this.group,
-    isAdmin: this.isAdmin,
-    firstName : this.firstName,
-    clearance : this.clearance,
-    accessToken : this.accessToken
+      isAdmin: this.isAdmin,
+      firstName: this.firstName,
+      clearance: this.clearance,
+      accessToken: this.accessToken,
     },
     config.hashingSecret,
     {expiresIn: '1h'}
@@ -81,17 +81,33 @@ userSchema.methods.authUser = async function ({ email, password }) {
 userSchema.methods.renewToken = async function () {
   let token = jwt.sign (
     {
-    id: this._id,
-    group: this.group,
-    isAdmin: this.isAdmin,
-    firstName : this.firstName,
-    clearance : this.clearance,
-    accessToken : this.accessToken
-     },
+      id: this._id,
+      isAdmin: this.isAdmin,
+      firstName: this.firstName,
+      clearance: this.clearance,
+      accessToken: this.accessToken,
+    },
     config.hashingSecret,
     {expiresIn: '1h'}
   );
   return {token};
+};
+
+userSchema.methods.setProfileImage = async function (file) {
+  return new Promise ((resolve, reject) => {
+    let a = file.originalname.split ('.');
+    let fileName = `${this.firstName}-${this.firstLastName}-profile.${a[a.length - 1]}`;
+    uploadOnline ('profiles', fileName, file.buffer)
+      .then (location => {
+        this.profileImage = location;
+        this.save ();
+        return resolve ();
+      })
+      .catch (err => {
+        console.log (err);
+        return reject ();
+      });
+  });
 };
 
 //User Model

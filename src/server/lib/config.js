@@ -47,6 +47,10 @@ environments.development = {
 		enteprise : {
 			maxExams : 'unlimited'
 		},
+	},
+	s3Crendetials : {
+		accessKey : 'AKIAJR4X2IEY2K7SOXXQ', //TODO : add it as an env variable
+		secretKey : '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'
 	}
 
 };
@@ -64,7 +68,7 @@ environments.production = {
 	},
 	hashingSecret:'prodSecret',
 	mongoDB:{
-		uri:`mongodb+srv://mactunechy:${process.env.db_password}@firstcluster-ueynt.mongodb.net/provisional?retryWrites=true&w=majority`
+		uri:`mongodb+srv://mactunechy:9eBJ4HyWh9L30ygK@firstcluster-ueynt.mongodb.net/provisional?retryWrites=true&w=majority`
 	},
 	company : {
 		infoEmail : ''
